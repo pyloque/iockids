@@ -14,7 +14,6 @@ IocKids
 示例
 --
 
-```
 ```java
 import javax.inject.Inject;
 import javax.inject.Named;
