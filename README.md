@@ -13,11 +13,13 @@ IocKids
 
 依赖
 --
+```xml
 <dependency>
 	<groupId>javax.inject</groupId>
 	<artifactId>javax.inject</artifactId>
 	<version>1</version>
 </dependency>
+```
 
 该依赖定义了DI必须实现的基础注解，这也就是JSR-330规范的标准接口协议。JSR330只规定了依赖注入的描述，对于容器实现未作要求。Spring 、Guice 、Dagger这三大DI框架都兼容该协议。
 
