@@ -11,6 +11,26 @@ IocKids
 5. Qualifier注入
 6. 丰富的出错提示
 
+依赖
+--
+<dependency>
+	<groupId>javax.inject</groupId>
+	<artifactId>javax.inject</artifactId>
+	<version>1</version>
+</dependency>
+
+该依赖定义了DI必须实现的基础注解，这也就是JSR-330规范的标准接口协议。JSR330只规定了依赖注入的描述，对于容器实现未作要求。Spring 、Guice 、Dagger这三大DI框架都兼容该协议。
+
+JSR-330
+--
+@Inject : 标记为“可注入”，相当于Spring里面的AutoWired
+@Qualifier : 限定器，用于分门别类，最常用的是名称限定器
+@Scope : 标记作用域，最常用的就是单例作用域，扩展里面还有请求作用域、会话作用域等，这不是必须的。
+@Named : 基于 String 的限定器，也就是名称限定器
+@Singleton : 标记为单例，也就是单例作用域
+
+如需细致了解该规范，请自行google一下
+
 示例
 --
 

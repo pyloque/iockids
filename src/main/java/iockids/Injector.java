@@ -19,13 +19,19 @@ import javax.inject.Singleton;
 
 public class Injector {
 
+	// 已经生成的单例实例放在这里，后续注入处可以直接拿
 	private Map<Class<?>, Object> singletons = Collections.synchronizedMap(new HashMap<>());
 	{
 		singletons.put(Injector.class, this);
 	}
+	// 已经生成的限定器实例放在这里，可续注入处可以直接拿
+	// 限定器就是在单例基础上增加一个类别，相当于多种单例，用Annotation来限定具体哪个单例
 	private Map<Class<?>, Map<Annotation, Object>> qualifieds = Collections.synchronizedMap(new HashMap<>());
 
+	// 尚未初始化的单例类放在这里
 	private Map<Class<?>, Class<?>> singletonClasses = Collections.synchronizedMap(new HashMap<>());
+	
+	// 尚未初始化的限定类别单例类放在这里
 	private Map<Class<?>, Map<Annotation, Class<?>>> qualifiedClasses = Collections.synchronizedMap(new HashMap<>());
 
 	public <T> Injector registerSingleton(Class<T> clazz, T o) {
@@ -222,6 +228,10 @@ public class Injector {
 		return null;
 	}
 
+	/**
+	 * 注入成员
+	 * @param t
+	 */
 	public <T> void injectMembers(T t) {
 		List<Field> fields = new ArrayList<>();
 		for (Field field : t.getClass().getDeclaredFields()) {
@@ -241,6 +251,11 @@ public class Injector {
 		}
 	}
 
+	/**
+	 * 获取对象
+	 * @param clazz
+	 * @return
+	 */
 	public <T> T getInstance(Class<T> clazz) {
 		return createNew(clazz);
 	}
