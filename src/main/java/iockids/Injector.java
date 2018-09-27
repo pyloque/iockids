@@ -34,6 +34,9 @@ public class Injector {
 	// 尚未初始化的限定类别单例类放在这里
 	private Map<Class<?>, Map<Annotation, Class<?>>> qualifiedClasses = Collections.synchronizedMap(new HashMap<>());
 
+	// 准备进行构造的类
+	private Set<Class<?>> readyClasses = Collections.synchronizedSet(new HashSet<>());
+
 	public <T> Injector registerSingleton(Class<T> clazz, T o) {
 		if (singletons.put(clazz, o) != null) {
 			throw new InjectException("duplicated singleton object for the same class " + clazz.getCanonicalName());
@@ -110,7 +113,7 @@ public class Injector {
 		var cons = new ArrayList<Constructor<T>>();
 		T target = null;
 		for (var con : clazz.getDeclaredConstructors()) {
-			// 默认构造期不需要Inject注解
+			// 默认构造期不需要Inject注解createFromQualified
 			if (!con.isAnnotationPresent(Inject.class) && con.getParameterCount() > 0) {
 				continue;
 			}
@@ -125,8 +128,11 @@ public class Injector {
 		if (cons.size() == 0) {
 			throw new InjectException("no accessible constructor for injection class " + clazz.getCanonicalName());
 		}
+		readyClasses.add(clazz); // 放入表示未完成的容器
 
 		target = createFromConstructor(cons.get(0)); // 构造器注入
+
+		readyClasses.remove(clazz); // 从未完成的容器取出
 
 		var isSingleton = clazz.isAnnotationPresent(Singleton.class);
 		if (!isSingleton) {
@@ -148,6 +154,9 @@ public class Injector {
 		var params = new Object[con.getParameterCount()];
 		var i = 0;
 		for (Parameter parameter : con.getParameters()) {
+			if( readyClasses.contains(parameter.getType()) ){
+				throw new InjectException(String.format("circular dependency on constructor , the root class is %s",con.getDeclaringClass().getCanonicalName()));
+			}
 			var param = createFromParameter(parameter);
 			if (param == null) {
 				throw new InjectException(String.format("parameter should not be empty with name %s of class %s",

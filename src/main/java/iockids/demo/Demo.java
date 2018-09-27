@@ -75,6 +75,24 @@ class NodeB implements Node {
 	}
 
 }
+@Singleton
+@Named("Ia")
+class Ia{
+	Ib b;
+	@Inject
+	Ia(Ib b){
+		this.b = b;
+	}
+}
+@Singleton
+@Named("Ib")
+class Ib{
+	Ia a;
+	@Inject
+	Ib(Ia a){
+		this.a = a;
+	}
+}
 
 class Leaf {
 
@@ -104,7 +122,7 @@ public class Demo {
 		var injector = new Injector();
 		injector.registerQualifiedClass(Node.class, NodeA.class);
 		injector.registerQualifiedClass(Node.class, NodeB.class);
-		var root = injector.getInstance(Root.class);
+		var root = injector.getInstance(Ia.class);
 		System.out.println(root);
 	}
 
